@@ -3,6 +3,8 @@ from subprocess import getoutput
 import sys
 from pathlib import Path
 
+installed_list = ["code", "brave-browser", "gnome-tweaks",
+                  "gnome-shell-extensions", "pipx", "hello"]
 
 # file name to be executed or current file name with full path
 
@@ -12,6 +14,18 @@ if not 'SUDO_UID' in environ.keys():
     sys.exit(1)
 
 
+def installed():
+    i = 0
+
+    while i < len(installed_list):
+        if installed_list[i] in getoutput("dpkg --get-selections"):
+            print(f"Skipping as {installed_list[i]} is already installed")
+        else:
+            pass
+        i += 1
+
+
+"""
 def check_brave_installed():
     try:
         # Run the dpkg command and redirect its output to /dev/null
@@ -85,6 +99,7 @@ def check_pipx_installed():
     except Exception as e:
         print(f"Error: {e}")
         return False
+"""
 
 
 def ubuntu23_04():
@@ -92,7 +107,7 @@ def ubuntu23_04():
     # install brave
     print("Installing brave: \n")
 
-    if not (check_brave_installed()):
+    if notinstall:
 
         try:
             system("sudo apt install curl")
