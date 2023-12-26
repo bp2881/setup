@@ -2,34 +2,19 @@ from subprocess import getoutput
 from os import system, path
 
 
-required_apps = ["code", "brave-browser", "gnome-tweaks",
-                 "gnome-shell-extensions", "pipx"]
+installed_list = ["hello", "code", "brave-browser", "gnome-tweaks",
+                  "gnome-shell-extensions", "pipx", "asdf"]
 
 
-def desktop_app():
+def ubuntu23_04():
+    i = 0
 
-    # Define the name of the desktop entry and the command to run the script
-    desktop_entry = "temp.desktop"
-    # Replace with the actual path to your Python script
-    command = """x-terminal-emulator -e sudo python3 "/home/pranav/Downloads/side project/test2.py" """
-
-    # Define the contents of the desktop entry file
-    desktop_entry_content = f"""[Desktop Entry]
-    Type=Application
-    Name=My Startup Script
-    Exec={command}
-    X-GNOME-Autostart-enabled=true
-    """
-
-    # Define the path to the autostart directory
-    autostart_dir = path.expanduser("~/.config/autostart")
-
-    # Create the desktop entry file
-    desktop_entry_path = path.join(autostart_dir, desktop_entry)
-    with open(desktop_entry_path, "w") as file:
-        file.write(desktop_entry_content)
-
-    print(f"Desktop entry created: {desktop_entry_path}")
+    while i < len(installed_list):
+        if installed_list[i] in getoutput("dpkg --get-selections"):
+            print(f"Skipping as {installed_list[i]} is already installed")
+        else:
+            notinstalled(f"{installed_list[i]}")
+        i += 1
 
 
 def notinstalled(app):
@@ -63,7 +48,7 @@ def notinstalled(app):
             system("sudo apt update && sudo apt install code")
 
         except:
-            print("Could not install VS-Code...\n")
+            print("Could not install Vs-code \n")
             pass
 
     # Installing gnome-tweaks and gnome-extensions
@@ -73,7 +58,7 @@ def notinstalled(app):
             system("sudo apt install gnome-tweaks")
 
         except:
-            print("Could not install gnome-tweaks...\n")
+            print("Could not install gnome-tweaks \n")
             pass
 
     if "extensions" in app:
@@ -152,21 +137,10 @@ def notinstalled(app):
             print("Couldn't install extensions \n")
 
         # remove app from startup
-        system(f"sudo rm -rf {desktop_app}")
+        system("sudo rm -rf /etc/systemd/system/ScriptService.service")
 
     # check what are installed and do a bit changes after windows
     print("Completed")
-
-
-def ubuntu23_04():
-    i = 0
-
-    while i < len(required_apps):
-        if required_apps[i] in getoutput("dpkg --get-selections"):
-            print(f"Skipping as {required_apps[i]} is already installed")
-        else:
-            notinstalled(f"{required_apps[i]}")
-        i += 1
 
 
 ubuntu23_04()

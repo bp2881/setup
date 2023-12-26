@@ -4,12 +4,21 @@ Potential name - GraphySync (20/09/23)
 """
 
 from os import system
-import platform
+import distro, platform
 import importlib
 
 
-importlib.import_module("ubuntu")
 
 # Checking platform
 
-current_os = platform.system()
+if platform.system() == "Linux":
+
+    if distro.like().lower() == "arch":
+        print("Sorry, still under development \n\n")
+        importlib.import_module("arch")
+
+    if distro.like().lower() == "debian":
+        importlib.import_module("ubuntu")
+        exit()
+
+print(distro.id(), distro.version(), distro.name())
