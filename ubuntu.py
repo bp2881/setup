@@ -1,132 +1,55 @@
-from os import system, environ, path
 from subprocess import getoutput
-import sys
-from pathlib import Path
-
-installed_list = ["code", "brave-browser", "gnome-tweaks",
-                  "gnome-shell-extensions", "pipx", "hello"]
-
-# file name to be executed or current file name with full path
-
-# checking priv.
-if not 'SUDO_UID' in environ.keys():
-    print("this program requires super user priv.")
-    sys.exit(1)
+from os import system, path
 
 
-def installed():
-    i = 0
-
-    while i < len(installed_list):
-        if installed_list[i] in getoutput("dpkg --get-selections"):
-            print(f"Skipping as {installed_list[i]} is already installed")
-        else:
-            pass
-        i += 1
+installed_list = ["hello", "code", "brave-browser", "gnome-tweaks",
+                  "gnome-shell-extensions", "pipx", "asdf"]
 
 
-"""
-def check_brave_installed():
-    try:
-        # Run the dpkg command and redirect its output to /dev/null
-        output = getoutput("dpkg --get-selections")
+def desktop_app():
 
-        # Check if "brave" is in the output
-        if "brave-browser" or "brave" in output:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
+    # Define the name of the desktop entry and the command to run the script
+    desktop_entry = "temp.desktop"
+    # Replace with the actual path to your Python script
+    command = """x-terminal-emulator -e sudo python3 "/home/pranav/Downloads/side project/test2.py" """
 
+    # Define the contents of the desktop entry file
+    desktop_entry_content = f"""[Desktop Entry]
+    Type=Application
+    Name=My Startup Script
+    Exec={command}
+    X-GNOME-Autostart-enabled=true
+    """
 
-def check_gnometweaks_installed():
-    try:
-        # Run the dpkg command and redirect its output to /dev/null
-        output = getoutput("dpkg --get-selections")
+    # Define the path to the autostart directory
+    autostart_dir = path.expanduser("~/.config/autostart")
 
-        # Check if "tweaks" is in the output
-        if "gnome-tweaks" in output:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
+    # Create the desktop entry file
+    desktop_entry_path = path.join(autostart_dir, desktop_entry)
+    with open(desktop_entry_path, "w") as file:
+        file.write(desktop_entry_content)
+
+    print(f"Desktop entry created: {desktop_entry_path}")
 
 
-def check_vscode_installed():
-    try:
-        # Run the dpkg command and redirect its output to /dev/null
-        output = getoutput("dpkg --get-selections")
+def notinstalled(app):
 
-        # Check if "code" is in the output
-        if "code" in output:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
+    # Installing brave-browser
 
-
-def check_gnome_extension_installed():
-    try:
-        # Run the dpkg command and redirect its output to /dev/null
-        output = getoutput("dpkg --get-selections")
-
-        # Check if "extensions" is in the output
-        if "gnome-shell-extensions" in output:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
-
-
-def check_pipx_installed():
-    try:
-        # Run the dpkg command and redirect its output to /dev/null
-        output = getoutput("dpkg --get-selections")
-
-        # Check if "pipx" is in the output
-        if "pipx" in output:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(f"Error: {e}")
-        return False
-"""
-
-
-def ubuntu23_04():
-
-    # install brave
-    print("Installing brave: \n")
-
-    if notinstall:
-
+    if "brave" in app:
         try:
             system("sudo apt install curl")
-            system("sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg")  # type: ignore
+            system("sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg")
             system('echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list')
             system("sudo apt update && sudo apt install brave-browser")
 
         except:
-            print("Could not install brave \n")
+            print("Unable to install brave...\n")
             pass
 
-    else:
-        print("Brave browser is already installed \n")
+    # Installing VS-code
 
-    # install vscode
-    print("Installing Vs Code: \n")
-
-    if not (check_vscode_installed()):
-
+    if "code" in app:
         try:
             system("sudo apt-get install wget gpg")
             system(
@@ -143,100 +66,107 @@ def ubuntu23_04():
             print("Could not install Vs-code \n")
             pass
 
-    else:
-        print("Vs Code is already installed \n")
+    # Installing gnome-tweaks and gnome-extensions
 
-    # install tweaks and extensions
-
-    print("Installing gnome-tweaks && gnome-extensions: \n")
-    if not (check_gnometweaks_installed()):
+    if "tweaks" in app:
         try:
             system("sudo apt install gnome-tweaks")
+
         except:
             print("Could not install gnome-tweaks \n")
             pass
-    else:
-        print("Gnome-tweaks is already installed \n")
 
-    if not (check_gnome_extension_installed()):
+    if "extensions" in app:
         try:
             system("sudo apt install gnome-shell-extensions")
+
         except:
             print("Could not install gnome-extensions \n")
             pass
-    else:
-        print("Gnome-extensions is already installed \n")
+
     # moving  themes and icons
     print("Moving icons and themes: \n")
-    # system("mv /media/pranav/Ventoy/extra/McMojave-circle-blue ~/.icons/McMojave-circle-blue")
-    # system("mv /media/pranav/Ventoy/extra/WhiteSur-Dark ~/.themes/WhiteSur-Dark")
+    # system("sudo mv /media/pranav/Ventoy/extra/McMojave-circle-blue ~/.icons/McMojave-circle-blue")
+    # system("sudo mv /media/pranav/Ventoy/extra/WhiteSur-Dark ~/.themes/WhiteSur-Dark")
 
     """
     ALways do this at the end
     """
-    # gnome extension & pipx
-    print("Installing pipx: \n")
-    if not (check_pipx_installed()):
+
+    # Installing pipx
+    if "pipx" in app:
+
+        print("Installing pipx: \n")
         try:
-            system("sudo apt update && sudo apt install pipx")
+            system("sudo apt update -y && sudo apt install pipx -y")
             print("Adding pipx to path \n")
             system("pipx ensurepath")
-            # before rebooting adding file to startup
+        # before rebooting adding file to startup
 
             try:
-                print("running this \n")
+                system("reboot")
 
             except Exception as e:
                 print(e)
 
         except:
             print("Couldn't install pipx \n")
-
             pass
-    else:
-        print("pipx is alreaddy installed \n")
-        system(f'reboot')
 
-    print("Installing gnome-extensions-cli: \n")
-    try:
-        system("pipx install gnome-extensions-cli --system-site-packages")
-    except:
-        print("Couldn't install gnome-extension-cli \n")
-        pass
+        print("Installing gnome-extensions-cli: \n")
+
+    if "pipx" not in app:
+        try:
+            system("pipx install gnome-extensions-cli --system-site-packages")
+
+        except:
+            print("Couldn't install gnome-extension-cli \n")
+            pass
 
     # try installing extensions
-    print("Installing extensions: \n")
-    try:
-        system("gext install dash-to-dock@micxgx.gmail.com")
-        system("gext install gnomebedtime@ionutbortis.gmail.com")
-        system("gext install no-overview@fthx")
-        system(
-            "gext install notification-banner-reloaded@marcinjakubowski.github.com")
-        system("gext install unlockDialogBackground@sun.wxg@gmail.com")
-        system("gext install unredirect@vaina.lt")
-        system(
-            "gext install user-theme@gnome-shell-extensions.gcampax.github.com")
+        print("Installing extensions: \n")
+        try:
+            system("gext install dash-to-dock@micxgx.gmail.com")
+            system("gext install gnomebedtime@ionutbortis.gmail.com")
+            system("gext install no-overview@fthx")
+            system(
+                "gext install notification-banner-reloaded@marcinjakubowski.github.com")
+            system("gext install unlockDialogBackground@sun.wxg@gmail.com")
+            system("gext install unredirect@vaina.lt")
+            system("gext install user-theme@gnome-shell-extensions.gcampax.github.com")
 
         # enabling extensions
 
-        system("gext enable dash-to-dock@micxgx.gmail.com")
-        system("gext enable gnomebedtime@ionutbortis.gmail.com")
-        system("gext enable no-overview@fthx")
-        system(
-            "gext enable notification-banner-reloaded@marcinjakubowski.github.com")
-        system("gext enable unlockDialogBackground@sun.wxg@gmail.com")
-        system("gext enable unredirect@vaina.lt")
-        system(
-            "gext enable user-theme@gnome-shell-extensions.gcampax.github.com")
+            system("gext enable dash-to-dock@micxgx.gmail.com")
+            system("gext enable gnomebedtime@ionutbortis.gmail.com")
+            system("gext enable no-overview@fthx")
+            system(
+                "gext enable notification-banner-reloaded@marcinjakubowski.github.com")
+            system("gext enable unlockDialogBackground@sun.wxg@gmail.com")
+            system("gext enable unredirect@vaina.lt")
+            system("gext enable user-theme@gnome-shell-extensions.gcampax.github.com")
 
-    except:
-        print("Couldn't install extensions \n")
+        except:
+            with open("helo.txt", "w+") as de:
+                de.write("Couldn't install extensions")
+            print("Couldn't install extensions \n")
 
-    # remove app from startup
-    system("sudo rm -rf /etc/systemd/system/ScriptService.service")
+        # remove app from startup
+        system(f"sudo rm -rf {desktop_app}")
 
     # check what are installed and do a bit changes after windows
     print("Completed")
+
+
+def ubuntu23_04():
+    i = 0
+
+    while i < len(installed_list):
+        if installed_list[i] in getoutput("dpkg --get-selections"):
+            print(f"Skipping as {installed_list[i]} is already installed")
+        else:
+            notinstalled(f"{installed_list[i]}")
+        i += 1
 
 
 ubuntu23_04()

@@ -1,0 +1,75 @@
+"""
+def check_brave_installed():
+    try:
+        # Run the dpkg command and redirect its output to /dev/null
+        output = getoutput("dpkg --get-selections")
+
+        # Check if "brave" is in the output
+        if "brave-browser" or "brave" in output:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def check_gnometweaks_installed():
+    try:
+        # Run the dpkg command and redirect its output to /dev/null
+        output = getoutput("dpkg --get-selections")
+
+        # Check if "tweaks" is in the output
+        if "gnome-tweaks" in output:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def check_vscode_installed():
+    try:
+        # Run the dpkg command and redirect its output to /dev/null
+        output = getoutput("dpkg --get-selections")
+
+        # Check if "code" is in the output
+        if "code" in output:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def check_gnome_extension_installed():
+    try:
+        # Run the dpkg command and redirect its output to /dev/null
+        output = getoutput("dpkg --get-selections")
+
+        # Check if "extensions" is in the output
+        if "gnome-shell-extensions" in output:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+
+def check_pipx_installed():
+    try:
+        # Run the dpkg command and redirect its output to /dev/null
+        output = getoutput("dpkg --get-selections")
+
+        # Check if "pipx" is in the output
+        if "pipx" in output:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+"""
