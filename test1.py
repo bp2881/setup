@@ -1,7 +1,6 @@
 import ctypes
 import os
 import subprocess
-import winreg
 import sys
 
 

@@ -1,13 +1,13 @@
 """
 started on 15 september 2023
 Potential name - GraphySync (20/09/23)
+# first version would be basic code with no major flaws
 """
 
 from os import system
-import distro, platform
+import distro
+import platform
 import importlib
-
-
 
 # Checking platform
 
