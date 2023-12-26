@@ -21,4 +21,7 @@ if platform.system() == "Linux":
         importlib.import_module("ubuntu")
         exit()
 
+if platform.system() == "Windows":
+    importlib.import_module("windows.py")
+
 print(distro.id(), distro.version(), distro.name())
