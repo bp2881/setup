@@ -115,39 +115,8 @@ def notinstalled(app):
 
         print("Installing gnome-extensions-cli: \n")
 
-    if "pipx" not in app:
-        try:
-            system("pipx install gnome-extensions-cli --system-site-packages")
-
-        except:
-            print("Couldn't install gnome-extension-cli \n")
-            pass
-
     # try installing extensions
-        print("Installing extensions: \n")
-        extensions = [
-            "dash-to-dock@micxgx.gmail.com",
-            "gnomebedtime@ionutbortis.gmail.com",
-            "no-overview@fthx",
-            "notification-banner-reloaded@marcinjakubowski.github.com",
-            "unlockDialogBackground@sun.wxg@gmail.com",
-            "unredirect@vaina.lt",
-            "user-theme@gnome-shell-extensions.gcampax.github.com"
-        ]
 
-        try:
-        for extension in extensions:
-            system(f"gext install {extension}")
-            system(f"gext enable {extension}")
-        except Exception as e:
-            print(f"Unable to install/enable extensions: {e}\n")
-            pass
-
-
-        except:
-            with open("helo.txt", "w+") as de:
-                de.write("Couldn't install extensions")
-            print("Couldn't install extensions \n")
 
         # remove app from startup
         system(f"sudo rm -rf {desktop_app}")
@@ -165,6 +134,9 @@ def ubuntu23_04():
         else:
             notinstalled(f"{required_apps[i]}")
         i += 1
+    
+    if "pipx" in getoutput("dpkg --get-selections"):
+        system("pipx install gnome-extensions-cli --system-site-packages")
 
 
 ubuntu23_04()
