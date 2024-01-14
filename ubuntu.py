@@ -10,7 +10,7 @@ def desktop_app():
 
     # Define the name of the desktop entry and the command to run the script
     desktop_entry = "temp.desktop"
-    # Replace with the actual path to your Python script
+
     command = """x-terminal-emulator -e sudo python3 "/home/pranav/Downloads/side project/test2.py" """
 
     # Define the contents of the desktop entry file
@@ -35,36 +35,36 @@ def desktop_app():
 def notinstalled(app):
 
     # Installing brave-browser
-
+    
     if "brave" in app:
-        try:
-            system("sudo apt install curl")
-            system("sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg")
-            system('echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"|sudo tee /etc/apt/sources.list.d/brave-browser-release.list')
-            system("sudo apt update && sudo apt install brave-browser")
+        methods = {
+        '1': "sudo apt install -y curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt install -y brave-browser",
+        '2': "sudo snap install brave"
+        }
 
-        except:
-            print("Unable to install brave...\n")
+        method = input("Brave browser has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
+
+        try:
+            system(methods.get(method, "Invalid option selected"))
+        except Exception as e:
+            print(f"Unable to install Brave browser: {e}\n")
             pass
 
     # Installing VS-code
 
     if "code" in app:
-        try:
-            system("sudo apt-get install wget gpg")
-            system(
-                "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg")
-            system(
-                "sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg")
-            system(
-                """sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'""")
-            system("rm -f packages.microsoft.gpg")
-            system("sudo apt install apt-transport-https")
-            system("sudo apt update && sudo apt install code")
+        methods = {
+        '1': "sudo apt install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt install code",
+        '2': "sudo snap install code --classic"
+        }
 
-        except:
-            print("Could not install VS-Code...\n")
-            pass
+        method = input("VS code has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
+
+        try:
+            system(methods.get(method, "Invalid option selected"))
+        except Exception as e:
+            print(f"Could not install VS-Code: {e}\n")
+
 
     # Installing gnome-tweaks and gnome-extensions
 
@@ -125,26 +125,24 @@ def notinstalled(app):
 
     # try installing extensions
         print("Installing extensions: \n")
+        extensions = [
+            "dash-to-dock@micxgx.gmail.com",
+            "gnomebedtime@ionutbortis.gmail.com",
+            "no-overview@fthx",
+            "notification-banner-reloaded@marcinjakubowski.github.com",
+            "unlockDialogBackground@sun.wxg@gmail.com",
+            "unredirect@vaina.lt",
+            "user-theme@gnome-shell-extensions.gcampax.github.com"
+        ]
+
         try:
-            system("gext install dash-to-dock@micxgx.gmail.com")
-            system("gext install gnomebedtime@ionutbortis.gmail.com")
-            system("gext install no-overview@fthx")
-            system(
-                "gext install notification-banner-reloaded@marcinjakubowski.github.com")
-            system("gext install unlockDialogBackground@sun.wxg@gmail.com")
-            system("gext install unredirect@vaina.lt")
-            system("gext install user-theme@gnome-shell-extensions.gcampax.github.com")
+        for extension in extensions:
+            system(f"gext install {extension}")
+            system(f"gext enable {extension}")
+        except Exception as e:
+            print(f"Unable to install/enable extensions: {e}\n")
+            pass
 
-        # enabling extensions
-
-            system("gext enable dash-to-dock@micxgx.gmail.com")
-            system("gext enable gnomebedtime@ionutbortis.gmail.com")
-            system("gext enable no-overview@fthx")
-            system(
-                "gext enable notification-banner-reloaded@marcinjakubowski.github.com")
-            system("gext enable unlockDialogBackground@sun.wxg@gmail.com")
-            system("gext enable unredirect@vaina.lt")
-            system("gext enable user-theme@gnome-shell-extensions.gcampax.github.com")
 
         except:
             with open("helo.txt", "w+") as de:
