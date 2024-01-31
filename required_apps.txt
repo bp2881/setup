@@ -1,2 +1,0 @@
-brave
-visual studio code
