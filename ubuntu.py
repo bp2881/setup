@@ -1,5 +1,6 @@
 from subprocess import getoutput
 from os import system, path
+import time
 
 
 required_apps = ["code", "brave-browser", "gnome-tweaks",
@@ -11,7 +12,7 @@ def desktop_app():
     # Define the name of the desktop entry and the command to run the script
     desktop_entry = "temp.desktop"
 
-    command = """x-terminal-emulator -e sudo python3 "/home/pranav/Downloads/side project/test2.py" """
+    command = f"""x-terminal-emulator -e sudo python3 "{path.dirname(__file__)}/{path.basename(__file__)}" """
 
     # Define the contents of the desktop entry file
     desktop_entry_content = f"""[Desktop Entry]
@@ -90,7 +91,7 @@ def notinstalled(app):
     # system("sudo mv /media/pranav/Ventoy/extra/WhiteSur-Dark ~/.themes/WhiteSur-Dark")
 
     """
-    ALways do this at the end
+    Always do this at the end
     """
 
     # Installing pipx
@@ -101,9 +102,13 @@ def notinstalled(app):
             system("sudo apt update -y && sudo apt install pipx -y")
             print("Adding pipx to path \n")
             system("pipx ensurepath")
-        # before rebooting adding file to startup
+            # before rebooting adding file to startup
+            
+            desktop_app()
 
             try:
+                print("\nRebooting in 5 seconds")
+                time.sleep(5)
                 system("reboot")
 
             except Exception as e:
