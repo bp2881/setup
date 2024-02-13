@@ -1,4 +1,4 @@
-from subprocess import getoutput
+from subprocess import getoutput, run
 from os import system, path
 import time
 
@@ -132,13 +132,15 @@ def notinstalled(app):
 
 def ubuntu23_04():
     for app in required_apps:
-        if system(f"whereis {app}") == f"{app}:" or system(f"which {app}") == "":
+        whereis_output = run(
+            ["whereis", app], capture_output=True, text=True).stdout
+        which_output = run(
+            ["which", app], capture_output=True, text=True).stdout
+
+        if f"{app}:" in whereis_output or not which_output.strip():
             notinstalled(app)
         else:
-            print(f"Skipping as {app} is already installed...")
-
-    if "pipx" in getoutput("dpkg --get-selections"):
-        system("pipx install gnome-extensions-cli --system-site-packages")
+            print(f"Skipping {app} as it is already installed...")
 
 
 ubuntu23_04()
