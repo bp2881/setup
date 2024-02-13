@@ -36,14 +36,15 @@ def desktop_app():
 def notinstalled(app):
 
     # Installing brave-browser
-    
+
     if "brave" in app:
         methods = {
-        '1': "sudo apt install -y curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt install -y brave-browser",
-        '2': "sudo snap install brave"
+            '1': "sudo apt install -y curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt install -y brave-browser",
+            '2': "sudo snap install brave"
         }
 
-        method = input("Brave browser has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
+        method = input(
+            "Brave browser has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
 
         try:
             system(methods.get(method, "Invalid option selected"))
@@ -55,17 +56,17 @@ def notinstalled(app):
 
     if "code" in app:
         methods = {
-        '1': "sudo apt install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt install code",
-        '2': "sudo snap install code --classic"
+            '1': "sudo apt install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt install code",
+            '2': "sudo snap install code --classic"
         }
 
-        method = input("VS code has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
+        method = input(
+            "VS code has 2 installation candidates\n[1] apt (repository)\t[2] snap\ndefault option[1]: ") or '1'
 
         try:
             system(methods.get(method, "Invalid option selected"))
         except Exception as e:
             print(f"Could not install VS-Code: {e}\n")
-
 
     # Installing gnome-tweaks and gnome-extensions
 
@@ -103,7 +104,7 @@ def notinstalled(app):
             print("Adding pipx to path \n")
             system("pipx ensurepath")
             # before rebooting adding file to startup
-            
+
             desktop_app()
 
             try:
@@ -122,7 +123,6 @@ def notinstalled(app):
 
     # try installing extensions
 
-
         # remove app from startup
         system(f"sudo rm -rf {desktop_app}")
 
@@ -131,15 +131,12 @@ def notinstalled(app):
 
 
 def ubuntu23_04():
-    i = 0
-
-    while i < len(required_apps):
-        if required_apps[i] in getoutput("dpkg --get-selections"):
-            print(f"Skipping as {required_apps[i]} is already installed")
+    for app in required_apps:
+        if system(f"whereis {app}") == f"{app}:" or system(f"which {app}") == "":
+            notinstalled(app)
         else:
-            notinstalled(f"{required_apps[i]}")
-        i += 1
-    
+            print(f"Skipping as {app} is already installed...")
+
     if "pipx" in getoutput("dpkg --get-selections"):
         system("pipx install gnome-extensions-cli --system-site-packages")
 
