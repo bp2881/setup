@@ -4,33 +4,7 @@ import time
 
 
 required_apps = ["code", "brave-browser", "gnome-tweaks",
-                 "gnome-shell-extensions", "pipx"]
-
-
-def desktop_app():
-
-    # Define the name of the desktop entry and the command to run the script
-    desktop_entry = "temp.desktop"
-
-    command = f"""x-terminal-emulator -e sudo python3 "{path.dirname(__file__)}/{path.basename(__file__)}" """
-
-    # Define the contents of the desktop entry file
-    desktop_entry_content = f"""[Desktop Entry]
-    Type=Application
-    Name=My Startup Script
-    Exec={command}
-    X-GNOME-Autostart-enabled=true
-    """
-
-    # Define the path to the autostart directory
-    autostart_dir = path.expanduser("~/.config/autostart")
-
-    # Create the desktop entry file
-    desktop_entry_path = path.join(autostart_dir, desktop_entry)
-    with open(desktop_entry_path, "w") as file:
-        file.write(desktop_entry_content)
-
-    print(f"Desktop entry created: {desktop_entry_path}")
+                 "gnome-shell-extensions"]
 
 
 def notinstalled(app):
@@ -86,45 +60,7 @@ def notinstalled(app):
             print("Could not install gnome-extensions \n")
             pass
 
-    # moving  themes and icons
-    print("Moving icons and themes: \n")
-    # system("sudo mv /media/pranav/Ventoy/extra/McMojave-circle-blue ~/.icons/McMojave-circle-blue")
-    # system("sudo mv /media/pranav/Ventoy/extra/WhiteSur-Dark ~/.themes/WhiteSur-Dark")
-
-    """
-    Always do this at the end
-    """
-
-    # Installing pipx
-    if "pipx" in app:
-
-        print("Installing pipx: \n")
-        try:
-            system("sudo apt update -y && sudo apt install pipx -y")
-            print("Adding pipx to path \n")
-            system("pipx ensurepath")
-            # before rebooting adding file to startup
-
-            desktop_app()
-
-            try:
-                print("\nRebooting in 5 seconds")
-                time.sleep(5)
-                system("reboot")
-
-            except Exception as e:
-                print(e)
-
-        except:
-            print("Couldn't install pipx \n")
-            pass
-
         print("Installing gnome-extensions-cli: \n")
-
-    # try installing extensions
-
-        # remove app from startup
-        system(f"sudo rm -rf {desktop_app}")
 
     # check what are installed and do a bit changes after windows
     print("Completed")
@@ -137,7 +73,7 @@ def ubuntu23_04():
         which_output = run(
             ["which", app], capture_output=True, text=True).stdout
 
-        if f"{app}:" in whereis_output or not which_output.strip():
+        if f"{app}:" in which_output.strip():
             notinstalled(app)
         else:
             print(f"Skipping {app} as it is already installed...")
