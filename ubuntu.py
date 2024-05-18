@@ -13,7 +13,7 @@ def notinstalled(app):
 
     if "brave" in app:
         methods = {
-            '1': "sudo apt install -y curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt install -y brave-browser",
+            '1': "sudo apt -y install curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt -y install brave-browser",
             '2': "sudo snap install brave"
         }
 
@@ -30,7 +30,7 @@ def notinstalled(app):
 
     if "code" in app:
         methods = {
-            '1': "sudo apt install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt install code",
+            '1': "sudo apt -y install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt -y install code",
             '2': "sudo snap install code --classic"
         }
 
@@ -46,7 +46,7 @@ def notinstalled(app):
 
     if "tweaks" in app:
         try:
-            system("sudo apt install gnome-tweaks")
+            system("sudo apt -y install gnome-tweaks")
 
         except:
             print("Could not install gnome-tweaks...\n")
@@ -54,7 +54,7 @@ def notinstalled(app):
 
     if "extensions" in app:
         try:
-            system("sudo apt install gnome-shell-extensions")
+            system("sudo apt -y install gnome-shell-extensions")
 
         except:
             print("Could not install gnome-extensions \n")
@@ -67,16 +67,12 @@ def notinstalled(app):
 
 
 def ubuntu23_04():
+    app_list = run(["apt", "list", "installed"], capture_output=True, text=True)
     for app in required_apps:
-        whereis_output = run(
-            ["whereis", app], capture_output=True, text=True).stdout
-        which_output = run(
-            ["which", app], capture_output=True, text=True).stdout
-
-        if f"{app}:" in which_output.strip():
-            notinstalled(app)
+        if app in app_list:
+            print(f"Skipping... as {app} is already installed")
         else:
-            print(f"Skipping {app} as it is already installed...")
+            notinstalled(app)
 
 
 ubuntu23_04()
