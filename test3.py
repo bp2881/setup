@@ -3,9 +3,12 @@ from bs4 import BeautifulSoup
 from os import system
 
 r = requests.get("https://repo.anaconda.com/archive/")
-content = BeautifulSoup(r.content, "html.parser")
-s = content.find('div', class_='entry-content')
+soup = BeautifulSoup(r.content, "html.parser")
 
-system("rm -rf archive.txt")
-with open("archive.txt", "w+") as a:
-    a.write(str(content))
+# system("rm -rf archive.txt")
+with open("archive.txt", "r+") as a:
+    lines = a.readlines()
+    for line in enumerate(lines, start=1):
+        print(line)
+        if "Linux" in line:
+            print(line.strip())
