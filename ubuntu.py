@@ -1,10 +1,15 @@
 from subprocess import getoutput, run
 from os import system, path
 import time
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import shutil
 
 
 required_apps = ["code", "brave-browser", "gnome-tweaks",
-                 "gnome-shell-extensions"]
+                 "gnome-shell-extensions", "conda"]
+
 
 
 def notinstalled(app):
@@ -62,14 +67,42 @@ def notinstalled(app):
 
         print("Installing gnome-extensions-cli: \n")
 
+    if "conda" in app:
+        url = "https://repo.anaconda.com/archive/"
+        response = requests.get(url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, "html.parser")
+            reference_link = None
+            for link in soup.find_all('a'):
+                if "Linux-x86_64.sh" in link.text:
+                    reference_link = link.get('href')
+                    break
+
+        if reference_link:
+            print("Downloading Anaconda... Please wait")
+            download_link = urljoin(url, reference_link)
+            ## Downloading Anaconda
+            local_filename = download_link.split('/')[-1]
+            with requests.get(url, stream=True) as r:
+                with open(local_filename, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
+        
+
+
+
     # check what are installed and do a bit changes after windows
-    print("Completed")
+    print("\nCompleted")
 
 
 def ubuntu23_04():
     app_list = str(run(["apt", "list", "--installed"], capture_output=True, text=True))
+    existing_apps = None
+    try:
+        existing_apps = str(run([f"{app} -h"]))
+    except:
+        pass
     for app in required_apps:
-        if app in app_list:
+        if app in app_list or existing_apps:
             print(f"Skipping... as {app} is already installed")
         else:
             notinstalled(app)

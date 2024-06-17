@@ -28,7 +28,4 @@ if response.status_code == 200:
 
     if reference_link:
         download_link = urljoin(url, reference_link)
-        s = time.time()
         install_anaconda(download_link)
-        e = time.time()
-        print(round(e - s))
