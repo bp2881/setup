@@ -1,15 +1,17 @@
 from subprocess import getoutput, run
-from os import system, path
+from os import system, path, getcwd
 import time
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import shutil
+from tqdm import tqdm
 
 
 required_apps = ["code", "brave-browser", "gnome-tweaks",
                  "gnome-shell-extensions", "conda"]
 
+app_list = str(run(["apt", "list", "--installed"], capture_output=True, text=True))
 
 
 def notinstalled(app):
@@ -69,7 +71,8 @@ def notinstalled(app):
 
     if "conda" in app:
         url = "https://repo.anaconda.com/archive/"
-        response = requests.get(url)
+        response = get(url)
+
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, "html.parser")
             reference_link = None
@@ -78,20 +81,36 @@ def notinstalled(app):
                     reference_link = link.get('href')
                     break
 
-        if reference_link:
-            print("Downloading Anaconda... Please wait")
-            download_link = urljoin(url, reference_link)
-            ## Downloading Anaconda
-            local_filename = download_link.split('/')[-1]
-            with requests.get(url, stream=True) as r:
-                with open(local_filename, 'wb') as f:
-                    shutil.copyfileobj(r.raw, f)
+            if reference_link:
+                print("Downloading Anaconda... Please wait")
+                download_link = urljoin(url, reference_link)
+
+                # Downloading Anaconda
+                local_filename = download_link.split('/')[-1]
+                file_path = path.join(getcwd(), local_filename)
+                
+                with get(download_link, stream=True) as r:
+                    total_size = int(r.headers.get('content-length', 0))
+                    chunk_size = 1024*1024
+                    with open(file_path, 'wb') as f:
+                        with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024, desc=local_filename) as pbar:
+                            for chunk in r.iter_content(chunk_size=chunk_size):
+                                if chunk:
+                                    f.write(chunk)
+                                    pbar.update(len(chunk))
+
+                print(f"Anaconda downloaded as {local_filename}")
+            else:
+                print("No download link found for Anaconda")
+        else:
+            print("Failed to retrieve Anaconda archive page.")
         
 
 
 
     # check what are installed and do a bit changes after windows
     print("\nCompleted")
+
 
 
 def ubuntu23_04():

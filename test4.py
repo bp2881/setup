@@ -1,23 +1,41 @@
-from subprocess import run
-from ubuntu import notinstalled
+from requests import get
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import shutil
+from os import getcwd, path
+from tqdm import tqdm
 
-required_apps = ["code", "brave-browser", "gnome-tweaks",
-                 "gnome-shell-extensions", "conda"]
+url = "https://repo.anaconda.com/archive/"
+response = get(url)
 
-app_list = str(run(["apt", "list", "--installed"], capture_output=True, text=True))
+if response.status_code == 200:
+    soup = BeautifulSoup(response.content, "html.parser")
+    reference_link = None
+    for link in soup.find_all('a'):
+        if "Linux-x86_64.sh" in link.text:
+            reference_link = link.get('href')
+            break
 
-for app in required_apps:
-    if app == "code":
-        code_installed = None
-        try:
-            code_installed = str(run([f"{app} -h"]))
-        except:
-            pass
-        if code_installed != None:
-            notinstalled(app)
+    if reference_link:
+        print("Downloading Anaconda... Please wait")
+        download_link = urljoin(url, reference_link)
 
-    elif app in app_list and app != "code":
-        print(f"Skipping... as {app} is already installed")
+        # Downloading Anaconda
+        local_filename = download_link.split('/')[-1]
+        file_path = path.join(getcwd(), local_filename)
+        
+        with get(download_link, stream=True) as r:
+            total_size = int(r.headers.get('content-length', 0))
+            chunk_size = 1024*1024
+            with open(file_path, 'wb') as f:
+                with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024, desc=local_filename) as pbar:
+                    for chunk in r.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            pbar.update(len(chunk))
 
+        print(f"Anaconda downloaded as {local_filename}")
     else:
-        notinstalled(app)
+        print("No download link found for Anaconda")
+else:
+    print("Failed to retrieve Anaconda archive page.")
