@@ -95,15 +95,19 @@ def notinstalled(app):
 
 
 def ubuntu23_04():
-    app_list = str(run(["apt", "list", "--installed"], capture_output=True, text=True))
-    existing_apps = None
-    try:
-        existing_apps = str(run([f"{app} -h"]))
-    except:
-        pass
     for app in required_apps:
-        if app in app_list or existing_apps:
+        if app == "code":
+            code_installed = None
+            try:
+                code_installed = str(run([f"{app} -h"]))
+            except:
+                pass
+            if code_installed != None:
+                notinstalled(app)
+
+        elif app in app_list and app != "code":
             print(f"Skipping... as {app} is already installed")
+
         else:
             notinstalled(app)
 
