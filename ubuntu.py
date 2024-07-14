@@ -1,7 +1,7 @@
 from subprocess import getoutput, run
 from os import system, path, getcwd
 import time
-import requests
+from requests import get
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import shutil
@@ -99,7 +99,7 @@ def notinstalled(app):
                                     f.write(chunk)
                                     pbar.update(len(chunk))
 
-                print(f"Anaconda downloaded as {local_filename}")
+                run(["bash", f"{local_filename}"])
             else:
                 print("No download link found for Anaconda")
         else:
@@ -110,7 +110,6 @@ def notinstalled(app):
 
     # check what are installed and do a bit changes after windows
     print("\nCompleted")
-
 
 
 def ubuntu23_04():
