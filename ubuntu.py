@@ -1,3 +1,7 @@
+## END OF VERSION - 1 (Jul 14, 2024)
+## Will be updated after windows and arch
+
+
 from subprocess import getoutput, run
 from os import system, path, getcwd
 import time
@@ -104,9 +108,6 @@ def notinstalled(app):
                 print("No download link found for Anaconda")
         else:
             print("Failed to retrieve Anaconda archive page.")
-        
-
-
 
     # check what are installed and do a bit changes after windows
     print("\nCompleted")
