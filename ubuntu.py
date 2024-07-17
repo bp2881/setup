@@ -3,7 +3,7 @@
 
 
 from subprocess import getoutput, run
-from os import system, path, getcwd
+from os import system, path, getcwd, remove
 import time
 from requests import get
 from bs4 import BeautifulSoup
@@ -15,7 +15,9 @@ from tqdm import tqdm
 required_apps = ["code", "brave-browser", "gnome-tweaks",
                  "gnome-shell-extensions", "conda"]
 
-app_list = str(run(["apt", "list", "--installed"], capture_output=True, text=True))
+app_list = str(run(["apt", "list", "--installed", ">", "m.txt"], capture_output=True, text=True))
+with open("m.txt", "r") as h:
+    content = h.readlines()
 
 
 def notinstalled(app):
@@ -114,21 +116,13 @@ def notinstalled(app):
 
 
 def ubuntu23_04():
-    for app in required_apps:
-        if app == "code":
-            code_installed = None
-            try:
-                code_installed = str(run([f"{app} -h"]))
-            except:
-                pass
-            if code_installed != None:
+    for line in content:
+        for app in required_apps:
+            d = False
+            if app in line:
+                if app == line[:len(app):]:
+                    print("Already Installed")
+                    d = True
+            if app not in line or d!= True:
                 notinstalled(app)
-
-        elif app in app_list and app != "code":
-            print(f"Skipping... as {app} is already installed")
-
-        else:
-            notinstalled(app)
-
-
 ubuntu23_04()
