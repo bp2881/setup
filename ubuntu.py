@@ -115,14 +115,23 @@ def notinstalled(app):
     print("\nCompleted")
 
 
-def ubuntu23_04():
+def humba(app):
     for line in content:
-        for app in required_apps:
-            d = False
-            if app in line:
-                if app == line[:len(app):]:
-                    print("Already Installed")
-                    d = True
-            if app not in line or d!= True:
-                notinstalled(app)
+        if app in line:
+            if app == line[:len(app):]:
+                print("Already Installed")
+            else:
+                print("humba", app)
+
+def ubuntu23_04():
+    for app in required_apps:
+        print(app)
+        if app in content:
+            print("transfering humba")
+            humba(app)
+        ## why no humba??
+        elif app not in content:
+            print("no humba")
+
+print(app_list)
 ubuntu23_04()
