@@ -1,29 +1,22 @@
-## END OF VERSION - 1 (Jul 14, 2024)
-## Will be updated after windows and arch
-
-
-from subprocess import getoutput, run
-from os import system, path, getcwd, remove
-import time
-from requests import get
+from subprocess import run
+from os import system, path, getcwd
+import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-import shutil
 from tqdm import tqdm
 
 
 required_apps = ["code", "brave-browser", "gnome-tweaks",
                  "gnome-shell-extensions", "conda"]
 
-app_list = str(run(["apt", "list", "--installed", ">", "m.txt"], capture_output=True, text=True))
+# Generate installed apps list
+run(["apt", "list", "--installed"], stdout=open("m.txt", "w"))
 with open("m.txt", "r") as h:
-    content = h.readlines()
+    content = h.read()
 
 
 def notinstalled(app):
-
     # Installing brave-browser
-
     if "brave" in app:
         methods = {
             '1': "sudo apt -y install curl && sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' | sudo tee /etc/apt/sources.list.d/brave-browser-release.list > /dev/null && sudo apt update && sudo apt -y install brave-browser",
@@ -37,10 +30,8 @@ def notinstalled(app):
             system(methods.get(method, "Invalid option selected"))
         except Exception as e:
             print(f"Unable to install Brave browser: {e}\n")
-            pass
 
     # Installing VS-code
-
     if "code" in app:
         methods = {
             '1': "sudo apt -y install wget gpg && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg && sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg && sudo sh -c 'echo \"deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main\" > /etc/apt/sources.list.d/vscode.list' && rm -f packages.microsoft.gpg && sudo apt install apt-transport-https && sudo apt update && sudo apt -y install code",
@@ -56,28 +47,21 @@ def notinstalled(app):
             print(f"Could not install VS-Code: {e}\n")
 
     # Installing gnome-tweaks and gnome-extensions
-
     if "tweaks" in app:
         try:
             system("sudo apt -y install gnome-tweaks")
-
         except:
             print("Could not install gnome-tweaks...\n")
-            pass
 
     if "extensions" in app:
         try:
             system("sudo apt -y install gnome-shell-extensions")
-
         except:
             print("Could not install gnome-extensions \n")
-            pass
-
-        print("Installing gnome-extensions-cli: \n")
 
     if "conda" in app:
         url = "https://repo.anaconda.com/archive/"
-        response = get(url)
+        response = requests.get(url)
 
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, "html.parser")
@@ -95,7 +79,7 @@ def notinstalled(app):
                 local_filename = download_link.split('/')[-1]
                 file_path = path.join(getcwd(), local_filename)
                 
-                with get(download_link, stream=True) as r:
+                with requests.get(download_link, stream=True) as r:
                     total_size = int(r.headers.get('content-length', 0))
                     chunk_size = 1024*1024
                     with open(file_path, 'wb') as f:
@@ -110,28 +94,21 @@ def notinstalled(app):
                 print("No download link found for Anaconda")
         else:
             print("Failed to retrieve Anaconda archive page.")
+    
+    print("\nInstallation Completed")
 
-    # check what are installed and do a bit changes after windows
-    print("\nCompleted")
 
+def check_and_install(app):
+    if app in content:
+        print(f"{app} is already installed.")
+    else:
+        print(f"{app} is not installed. Installing now...")
+        notinstalled(app)
 
-def humba(app):
-    for line in content:
-        if app in line:
-            if app == line[:len(app):]:
-                print("Already Installed")
-            else:
-                print("humba", app)
 
 def ubuntu23_04():
     for app in required_apps:
-        print(app)
-        if app in content:
-            print("transfering humba")
-            humba(app)
-        ## why no humba??
-        elif app not in content:
-            print("no humba")
+        check_and_install(app)
 
-print(app_list)
+
 ubuntu23_04()
