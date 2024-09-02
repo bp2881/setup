@@ -14,7 +14,6 @@ run(["apt", "list", "--installed"], stdout=open("m.txt", "w"))
 with open("m.txt", "r") as h:
     content = h.read()
 
-
 def notinstalled(app):
     # Installing brave-browser
     if "brave" in app:
@@ -110,5 +109,7 @@ def ubuntu23_04():
     for app in required_apps:
         check_and_install(app)
 
-
+if __name__ == "__main__":
+    print("Please run the app using 'run.py' file.")
+    exit()
 ubuntu23_04()
