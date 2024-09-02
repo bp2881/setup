@@ -7,7 +7,7 @@ def get_installed_apps():
     try:
         result = subprocess.check_output(['winget', 'list'], text=True)
         installed_apps = [line.split('\t')[0].strip().lower()
-                          for line in result.split('\n') if line.strip()]
+        for line in result.split('\n') if line.strip()]
         return installed_apps
     except subprocess.CalledProcessError:
         return None
