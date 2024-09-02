@@ -2,7 +2,6 @@ import subprocess
 
 required_apps = ["visual studio code", "brave"]
 
-
 def get_installed_apps():
     try:
         result = subprocess.check_output(['winget', 'list'], text=True)
@@ -11,7 +10,6 @@ def get_installed_apps():
         return installed_apps
     except subprocess.CalledProcessError:
         return None
-
 
 def app_installed_status(app, installed_apps):
     if any(app.lower() in installed_app for installed_app in installed_apps):
